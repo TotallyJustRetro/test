@@ -1,0 +1,44 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install llvm-mingw
+        run: |
+          wget -q https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64.tar.xz
+          tar -xf llvm-mingw-*.tar.xz
+          echo "$PWD/llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64/bin" >> $GITHUB_PATH
+
+      - name: Install SDL2 MinGW dev package
+        run: |
+          wget -q https://github.com/libsdl-org/SDL/releases/download/release-2.30.0/SDL2-devel-2.30.0-mingw.tar.gz
+          tar -xf SDL2-devel-2.30.0-mingw.tar.gz
+          echo "SDL_WIN=$PWD/SDL2-2.30.0" >> $GITHUB_ENV
+
+      - name: Build
+        run: |
+          make -j$(nproc) win \
+            WIN_CC=x86_64-w64-mingw32-clang \
+            SDL_WIN=$SDL_WIN
+
+      - name: Copy SDL2.dll next to exe
+        run: |
+          cp $SDL_WIN/x86_64-w64-mingw32/bin/SDL2.dll build/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrMarioLauncher
+          path: |
+            build/DrMarioLauncher.exe
+            build/SDL2.dll
