@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.16)
+project(gb_recomp C)
+# cmake -S . -B build -DROM=path/to/game.gb && cmake --build build
+set(ROM "" CACHE FILEPATH "ROM to recompile (32 KB, no bank switching)")
+if(NOT ROM)
+  message(FATAL_ERROR "pass -DROM=path/to/game.gb")
+endif()
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+find_package(SDL2 REQUIRED)
+set(GEN ${CMAKE_BINARY_DIR}/generated)
+set(ROOTS ${CMAKE_SOURCE_DIR}/roots.txt)   # optional: output of tools/discover.py
+set(ROOT_ARGS "")
+if(EXISTS ${ROOTS})
+  set(ROOT_ARGS --roots ${ROOTS})
+endif()
+add_custom_command(
+  OUTPUT ${GEN}/game.c ${GEN}/interp.c ${GEN}/game_info.h
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/recomp.py ${ROM} -o ${GEN} ${ROOT_ARGS}
+  DEPENDS ${ROM} tools/recomp.py tools/sm83.py)
+file(GLOB RT runtime/*.c)
+add_executable(gb ${RT} ${GEN}/game.c ${GEN}/interp.c)
+target_include_directories(gb PRIVATE runtime ${GEN})
+target_compile_definitions(gb PRIVATE USE_SDL)
+target_link_libraries(gb PRIVATE SDL2::SDL2)
+if(NOT WIN32)
+  target_link_libraries(gb PRIVATE m)
+endif()
+if(TARGET SDL2::SDL2main AND WIN32)
+  target_link_libraries(gb PRIVATE SDL2::SDL2main)
+endif()

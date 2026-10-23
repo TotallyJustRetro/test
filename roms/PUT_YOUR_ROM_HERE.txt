@@ -1,0 +1,7 @@
+Put your ROM here, e.g. roms/dr_mario.gb
+
+Then from the project folder run:
+  make ROM=roms/dr_mario.gb
+  build/gb roms/dr_mario.gb
+
+(The ROM can live anywhere; this folder is just a convenient default.)
