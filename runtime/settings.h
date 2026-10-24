@@ -65,6 +65,6 @@ void controls_defaults(GameCfg *c);
 void filter_preset(FilterCfg *f, int preset);
 extern const char *filter_preset_names[];
 extern const int n_filter_presets;
-void settings_load(void);           /* from <exe folder>/dr_mario_launcher.ini */
+void settings_load(void);           /* from <exe folder>/pipeclean.ini */
 void settings_save(void);
 const char *settings_dir(void);     /* folder next to the program (with trailing slash) */

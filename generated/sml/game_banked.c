@@ -3,10 +3,10 @@
 #include "cart.h"
 
 /* Forward declarations for all bank functions. */
-int recomp_sml_bank0(void);
-int recomp_sml_bank1(void);
-int recomp_sml_bank2(void);
-int recomp_sml_bank3(void);
+int recomp_bank0_sml(void);
+int recomp_bank1_sml(void);
+int recomp_bank2_sml(void);
+int recomp_bank3_sml(void);
 
 extern const uint8_t *cart_hi;
 extern uint8_t *rom;
@@ -22,12 +22,12 @@ void recomp_run_sml(void)
     for (;;) {
         int r;
         if (cpu.pc < 0x4000) {
-            r = recomp_sml_bank0();
+            r = recomp_bank0_sml();
         } else if (cpu.pc < 0x8000) {
             switch (current_bank()) {
-            case 1: r = recomp_sml_bank1(); break;
-            case 2: r = recomp_sml_bank2(); break;
-            case 3: r = recomp_sml_bank3(); break;
+            case 1: r = recomp_bank1_sml(); break;
+            case 2: r = recomp_bank2_sml(); break;
+            case 3: r = recomp_bank3_sml(); break;
             default: recomp_miss(cpu.pc); cpu_step_checked(); r = 0; break;
             }
         } else {

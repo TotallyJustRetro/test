@@ -143,7 +143,8 @@ const char *settings_dir(void)
     return dir;
 }
 
-static void ini_path(char *out, size_t n) { snprintf(out, n, "%sdr_mario_launcher.ini", settings_dir()); }
+static void ini_path(char *out, size_t n) { snprintf(out, n, "%spipeclean.ini", settings_dir()); }
+static void ini_path_legacy(char *out, size_t n) { snprintf(out, n, "%sdr_mario_launcher.ini", settings_dir()); }
 
 static int clampi(int v, int lo, int hi) { return v < lo ? lo : (v > hi ? hi : v); }
 
@@ -196,6 +197,7 @@ void settings_load(void)
     char path[1100];
     ini_path(path, sizeof path);
     FILE *f = fopen(path, "r");
+    if (!f) { ini_path_legacy(path, sizeof path); f = fopen(path, "r"); }
     if (!f) return;
     Field tab[400];
     int nf = field_table(tab, 400);

@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "app.h"
+#include "logo.h"
 #include "launcher.h"
 #include "ui.h"
 #include "settings.h"
@@ -164,10 +165,14 @@ int app_run(const char *autorun, const char *hack)
         return 1;
     }
     settings_load();
-    win = SDL_CreateWindow("Dr Mario Launcher", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, win_w, win_h,
+    win = SDL_CreateWindow("PipeClean", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, win_w, win_h,
                            SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     if (!win) { fprintf(stderr, "window: %s\n", SDL_GetError()); return 1; }
     SDL_SetWindowMinimumSize(win, 640, 420);
+    {   /* window / taskbar icon */
+        SDL_Surface *ic = SDL_CreateRGBSurfaceWithFormatFrom((void *)logo_rgba, LOGO_W, LOGO_H, 32, LOGO_W * 4, SDL_PIXELFORMAT_ABGR8888);
+        if (ic) { SDL_SetWindowIcon(win, ic); SDL_FreeSurface(ic); }
+    }
     if (getenv("GBL_SIZE")) { sscanf(getenv("GBL_SIZE"), "%dx%d", &win_w, &win_h); SDL_SetWindowSize(win, win_w, win_h); }
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!ren) ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_SOFTWARE);

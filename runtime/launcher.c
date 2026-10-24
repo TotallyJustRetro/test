@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "logo.h"
 #include "launcher.h"
 #include "ui.h"
 #include "settings.h"
@@ -20,6 +21,17 @@
 
 static SDL_Renderer *g_ren; static SDL_Renderer *ren_get(void){return g_ren;}
 void launcher_set_renderer(SDL_Renderer *r){g_ren=r;}
+
+/* the PipeClean logo (compiled in, see logo.c) */
+static SDL_Texture *logo_tex;
+static void draw_logo(float x, float y, float size)
+{
+    if (!logo_tex && g_ren) {
+        logo_tex = SDL_CreateTexture(g_ren, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, LOGO_W, LOGO_H);
+        if (logo_tex) { SDL_UpdateTexture(logo_tex, NULL, logo_rgba, LOGO_W * 4); SDL_SetTextureBlendMode(logo_tex, SDL_BLENDMODE_BLEND); }
+    }
+    if (logo_tex) ui_image(logo_tex, NULL, x, y, size, size);
+}
 void ui_text_fit_tail(int font, float size, float x, float y, float maxw, uint32_t c, const char *s);
 
 enum { TAB_FILTERS = N_GAMES, TAB_AUDIO, N_TABS };
@@ -707,8 +719,10 @@ LauncherResult launcher_frame(float dt)
     }
 
     /* top bar */
-    ui_text(F_BOLD, 20, 28, 22, C_TEXT, "Dr Mario Launcher");
-    ui_text(F_REG, 12, 28, 50, C_DIM, "Game Boy classics on your PC");
+    draw_logo(24, 16, 52);
+    ui_text(F_BOLD, 22, 88, 20, C_TEXT, "Pipe");
+    ui_text(F_BOLD, 22, 88 + ui_text_w(F_BOLD, 22, "Pipe"), 20, HEX(0x35DEC4), "Clean");
+    ui_text(F_REG, 12, 88, 50, C_DIM, "Game Boy classics on your PC");
     ui_rect(24, 80, UI_W - 48, 1, C_LINE);
 
     /* sidebar */

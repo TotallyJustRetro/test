@@ -38,7 +38,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DrMarioLauncher
+          name: PipeClean
           path: |
-            build/DrMarioLauncher.exe
+            build/PipeClean.exe
             build/SDL2.dll

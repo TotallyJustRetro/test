@@ -1,0 +1,5 @@
+roms/*.gb
+roms/*.gbc
+generated/
+build*/
+__pycache__/

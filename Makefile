@@ -117,7 +117,7 @@ win: $(NON_BANK_GEN) $(WIN_BANK_OBJS) $(WIN_SML2_OBJS) | $(BUILD)
 	$(WIN_CC) -O2 -Wall -Wno-format-truncation -DUSE_SDL \
 	    $(WIN_INC) $(INC) \
 	    $(RT_SRC) $(NON_BANK_GEN) $(WIN_BANK_OBJS) $(WIN_SML2_OBJS) \
-	    -o $(BUILD)/DrMarioLauncher.exe \
+	    -o $(BUILD)/PipeClean.exe \
 	    -mwindows $(WIN_LIB) $(WIN_SYS) -lm
 
 run: $(BUILD)/gb
