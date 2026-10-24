@@ -69,10 +69,9 @@ static int check(int game, const uint8_t *buf, long n, RomStatus *st)
         return 1;
     }
     st->exact = games[game].crc && ci.crc == games[game].crc;
-    if (games[game].lifted && !st->exact) {
-        snprintf(st->msg, sizeof st->msg, "That isn't the right %s dump (checksum %08X, expected %08X).", games[game].name, ci.crc, games[game].crc);
-        return 1;
-    }
+    /* Non-matching revision: warn but still allow — will run via interpreter */
+    if (games[game].lifted && !st->exact)
+        snprintf(st->msg, sizeof st->msg, "Different %s revision (checksum %08X) — will run in compatibility mode.", games[game].name, ci.crc);
     return 0;
 }
 
@@ -86,7 +85,7 @@ int rom_probe(int game, const char *path, RomStatus *st)
     free(buf);
     if (r) return 1;
     st->ok = 1;
-    snprintf(st->msg, sizeof st->msg, "Verified.");
+    if (!st->msg[0]) snprintf(st->msg, sizeof st->msg, "Verified.");
     return 0;
 }
 
@@ -107,7 +106,7 @@ int rom_load(int game, const char *path, RomStatus *st)
     free(base_img);
     base_img = buf; base_len = (size_t)n; base_game = game;
     if (cart_install(base_img, base_len)) { snprintf(st->msg, sizeof st->msg, "Couldn't load that ROM."); return 1; }
-    interp_needed = !games[game].lifted;
+    interp_needed = !games[game].lifted || !st->exact;
     dispatch_set_game(game);
     hack_active = 0;
     st->ok = 1;
