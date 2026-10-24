@@ -46,43 +46,69 @@ const char *path_base(const char *p)
 }
 
 #ifdef _WIN32
-static int dlg_win(int kind, const char *title, char *out, size_t n)
+/* Dialog args/result passed to worker thread */
+typedef struct {
+    int      kind;
+    wchar_t  title[256];
+    wchar_t  buf[2048];
+    int      result;
+    HANDLE   done;          /* signalled when thread finishes */
+} DlgArgs;
+
+static DWORD WINAPI dlg_thread(void *p)
 {
-    wchar_t wtitle[256], buf[2048] = L"";
-    to_w(title, wtitle, 256);
-    static int com;
-    if (!com) { CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); com = 1; }
-    if (kind == DLG_FOLDER) {
+    DlgArgs *a = (DlgArgs *)p;
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    if (a->kind == DLG_FOLDER) {
         BROWSEINFOW bi;
         memset(&bi, 0, sizeof bi);
-        bi.lpszTitle = wtitle;
+        bi.lpszTitle = a->title;
         bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
         LPITEMIDLIST id = SHBrowseForFolderW(&bi);
-        if (!id) return 0;
-        int ok = SHGetPathFromIDListW(id, buf);
-        CoTaskMemFree(id);
-        if (!ok) return 0;
-        from_w(buf, out, n);
-        return 1;
+        if (id) { a->result = SHGetPathFromIDListW(id, a->buf); CoTaskMemFree(id); }
+    } else {
+        static const wchar_t *filters[] = {
+            L"Game Boy ROM (*.gb;*.gbc)\0*.gb;*.gbc\0All files\0*.*\0",
+            L"Romhack or patch (*.ips;*.bps;*.ups;*.gb;*.gbc)\0*.ips;*.bps;*.ups;*.gb;*.gbc\0All files\0*.*\0",
+            L"Images (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tga)\0*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tga\0All files\0*.*\0",
+            L"Audio (*.wav;*.mp3;*.ogg;*.flac)\0*.wav;*.mp3;*.ogg;*.flac\0All files\0*.*\0"};
+        OPENFILENAMEW o;
+        memset(&o, 0, sizeof o);
+        o.lStructSize  = sizeof o;
+        o.lpstrFilter  = filters[a->kind];
+        o.lpstrFile    = a->buf;
+        o.nMaxFile     = 2048;
+        o.lpstrTitle   = a->title;
+        o.Flags        = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR | OFN_EXPLORER;
+        a->result = GetOpenFileNameW(&o);
     }
-    static const wchar_t *filters[] = {
-        L"Game Boy ROM (*.gb;*.gbc)\0*.gb;*.gbc\0All files\0*.*\0",
-        L"Romhack or patch (*.ips;*.bps;*.ups;*.gb;*.gbc)\0*.ips;*.bps;*.ups;*.gb;*.gbc\0All files\0*.*\0",
-        L"Images (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tga)\0*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tga\0All files\0*.*\0",
-        L"Audio (*.wav;*.mp3;*.ogg;*.flac)\0*.wav;*.mp3;*.ogg;*.flac\0All files\0*.*\0"};
-    OPENFILENAMEW o;
-    memset(&o, 0, sizeof o);
-    o.lStructSize = sizeof o;
-    o.lpstrFilter = filters[kind];
-    o.lpstrFile = buf;
-    o.nMaxFile = 2048;
-    o.lpstrTitle = wtitle;
-    o.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR | OFN_EXPLORER;
-    if (!GetOpenFileNameW(&o)) return 0;
-    from_w(buf, out, n);
+    CoUninitialize();
+    SetEvent(a->done);
+    return 0;
+}
+
+int dlg_pick(int kind, const char *title, char *out, size_t n)
+{
+    out[0] = 0;
+    DlgArgs a;
+    memset(&a, 0, sizeof a);
+    a.kind = kind;
+    to_w(title, a.title, 256);
+    a.done = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (!a.done) return 0;
+    HANDLE t = CreateThread(NULL, 0, dlg_thread, &a, 0, NULL);
+    if (!t) { CloseHandle(a.done); return 0; }
+    /* Pump SDL events while waiting so the window stays responsive */
+    while (WaitForSingleObject(a.done, 16) == WAIT_TIMEOUT) {
+        MSG msg;
+        while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) { TranslateMessage(&msg); DispatchMessageW(&msg); }
+    }
+    CloseHandle(t);
+    CloseHandle(a.done);
+    if (!a.result) return 0;
+    from_w(a.buf, out, n);
     return 1;
 }
-int dlg_pick(int kind, const char *title, char *out, size_t n) { out[0] = 0; return dlg_win(kind, title, out, n); }
 void open_folder(const char *path)
 {
     wchar_t wp[2048];
