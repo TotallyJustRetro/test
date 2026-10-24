@@ -825,6 +825,7 @@ dispatch:
     case 0x54AD: goto L_54AD;
     case 0x54B0: goto L_54B0;
     case 0x54B3: goto L_54B3;
+    case 0x54C3: goto L_54C3;
     case 0x54C9: goto L_54C9;
     case 0x54CE: goto L_54CE;
     case 0x54D2: goto L_54D2;
@@ -13506,6 +13507,7 @@ L_54B3:;
     wr8((uint16_t)(0xFF00 + 0xEC), cpu.a);
     tick(12);
     if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x54C3; return 1; }
+L_54C3:;
     /* 54C3  LDH A,($DF) */
     cpu.a = rd8((uint16_t)(0xFF00 + 0xDF));
     tick(12);

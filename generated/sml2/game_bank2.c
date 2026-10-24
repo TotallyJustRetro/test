@@ -311,6 +311,7 @@ dispatch:
     case 0x54B6: goto L_54B6;
     case 0x54BB: goto L_54BB;
     case 0x54BE: goto L_54BE;
+    case 0x54C3: goto L_54C3;
     case 0x54CD: goto L_54CD;
     case 0x54D0: goto L_54D0;
     case 0x54D6: goto L_54D6;
@@ -2646,10 +2647,10 @@ L_4424:;
     if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x4590; return 1; }
     goto L_4590;
 L_4429:;
-    /* 4429  CALL $1F32 */
+    /* 4429  CALL $1F2F */
     push16(0x442C); tick(24);
-    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F32; return 1; }
-    cpu.pc = 0x1F32; return 0;
+    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F2F; return 1; }
+    cpu.pc = 0x1F2F; return 0;
 L_442C:;
     /* 442C  CP A,$38 */
     alu_cp(0x38);
@@ -2672,10 +2673,10 @@ L_442C:;
     if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x4583; return 1; }
     goto L_4583;
 L_4434:;
-    /* 4434  CALL $1F32 */
+    /* 4434  CALL $1F2F */
     push16(0x4437); tick(24);
-    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F32; return 1; }
-    cpu.pc = 0x1F32; return 0;
+    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F2F; return 1; }
+    cpu.pc = 0x1F2F; return 0;
 L_4437:;
     /* 4437  CP A,$38 */
     alu_cp(0x38);
@@ -2703,10 +2704,10 @@ L_4451:;
     if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x4583; return 1; }
     goto L_4583;
 L_4456:;
-    /* 4456  CALL $1F32 */
+    /* 4456  CALL $1F2F */
     push16(0x4459); tick(24);
-    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F32; return 1; }
-    cpu.pc = 0x1F32; return 0;
+    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F2F; return 1; }
+    cpu.pc = 0x1F2F; return 0;
 L_4459:;
     /* 4459  CP A,$38 */
     alu_cp(0x38);
@@ -2760,10 +2761,10 @@ L_44D2:;
     if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x459D; return 1; }
     goto L_459D;
 L_44D7:;
-    /* 44D7  CALL $1F32 */
+    /* 44D7  CALL $1F2F */
     push16(0x44DA); tick(24);
-    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F32; return 1; }
-    cpu.pc = 0x1F32; return 0;
+    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F2F; return 1; }
+    cpu.pc = 0x1F2F; return 0;
 L_44DA:;
     /* 44DA  CP A,$38 */
     alu_cp(0x38);
@@ -2786,10 +2787,10 @@ L_44DA:;
     if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x4583; return 1; }
     goto L_4583;
 L_44E2:;
-    /* 44E2  CALL $1F32 */
+    /* 44E2  CALL $1F2F */
     push16(0x44E5); tick(24);
-    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F32; return 1; }
-    cpu.pc = 0x1F32; return 0;
+    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F2F; return 1; }
+    cpu.pc = 0x1F2F; return 0;
 L_44E5:;
     /* 44E5  CP A,$38 */
     alu_cp(0x38);
@@ -2829,10 +2830,10 @@ L_4528:;
     cpu.b = cpu.l;
     tick(4);
     if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x452A; return 1; }
-    /* 452A  CALL $1F32 */
+    /* 452A  CALL $1F2F */
     push16(0x452D); tick(24);
-    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F32; return 1; }
-    cpu.pc = 0x1F32; return 0;
+    if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x1F2F; return 1; }
+    cpu.pc = 0x1F2F; return 0;
 L_452D:;
     /* 452D  CP A,$38 */
     alu_cp(0x38);
@@ -6722,6 +6723,7 @@ L_54BE:;
     wr8((uint16_t)(0xFF00 + 0xEC), cpu.a);
     tick(12);
     if (__builtin_expect(cpu_irq_check(), 0)) { cpu.pc = 0x54C3; return 1; }
+L_54C3:;
     /* 54C3  RET NZ */
     if (!(cpu.f & FZ)) {
         cpu.pc = pop16(); tick(20);

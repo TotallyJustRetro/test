@@ -10,8 +10,8 @@
 
 const GameDef games[N_GAMES] = {
     {"drmario", "Dr. Mario",             "Falling-pill puzzle. Recompiled to native code.", "DR.MARIO",        0xF0225DD0u, 1, 0xE0584C, 200, 0, 0, 0, 0, 0},
-    {"sml",     "Super Mario Land",      "Sarasaland platformer.",                          "SUPER MARIOLAND", 0x2C27EC70u, 1, 0x4FA85A, 420, 32, 56, 16, 0, 1},
-    {"sml2",    "Super Mario Land 2",    "6 Golden Coins.",                                 "MARIOLAND2",      0x635A9112u, 1, 0xE8B23A, 700, 49, 33, 0, 1, 2},
+    {"sml",     "Super Mario Land",      "Sarasaland platformer.",                          "SUPER MARIOLAND", 0x90776841u, 1, 0x4FA85A, 420, 32, 56, 16, 0, 1},
+    {"sml2",    "Super Mario Land 2",    "6 Golden Coins.",                                 "MARIOLAND2",      0xD5EC24E4u, 1, 0xE8B23A, 700, 49, 33, 0, 1, 2},
 };
 
 #define MAX_ROM (8u << 20)
